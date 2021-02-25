@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import urllib
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +27,7 @@ SECRET_KEY = '#&v^q$^$(w@l(nnf8=*enmzv$ebmkw3ouvs!a)5md1w5!v7+$2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'general'
+    'general',
+    's3upload',
+    'storages',
+    'bootstrap4'
 ]
 
 MIDDLEWARE = [
@@ -68,19 +73,48 @@ TEMPLATES = [
     },
 ]
 
+
+# AWS
+
+# If these are not defined, the EC2 instance profile and IAM role are used.
+# This requires you to add boto3 (or botocore, which is a dependency of boto3)
+# to your project dependencies.
+AWS_ACCESS_KEY_ID = 'AKIAUNLOXSXREJISSC6D'
+AWS_SECRET_ACCESS_KEY = 'r6HL8lS/SxIdNinI8MHutOAsbMY5oojyMmugL9Kg'
+
+AWS_STORAGE_BUCKET_NAME = 'musictutor'
+
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+
+
+#********************************************************************
+
+
 WSGI_APPLICATION = 'AncientMusicApp.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+#mongo db access
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'CLIENT': {
+            'host': 'mongodb+srv://admin:' + urllib.parse.quote('admin') + '@cluster0.0rips.mongodb.net/test',
+            'username': 'admin',
+            'password': 'admin',
+            'authMechanism': 'SCRAM-SHA-1'
+        }
     }
 }
 
+# mongodb+srv://admin:admin@cluster0.0rips.mongodb.net/test?authSource=admin&replicaSet=atlas-etfwxp-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -115,7 +149,11 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+# Static files (css, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
