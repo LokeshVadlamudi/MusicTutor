@@ -12,6 +12,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
+# s3 upload
+import boto3
+from botocore.exceptions import NoCredentialsError
+import tinys3
 
 
 # Create your views here.
@@ -24,20 +28,22 @@ def home(request):
 @csrf_exempt
 def predict_song(request):
     if request.method == 'POST':
-        context = ['Classical', 'Hipop', 'Jazz', 'Metal', 'Pop', 'Rock']
-        print(request.body)
-        headers = {'content-type': 'audio/wav'}
-        files = {'file': request.body}
-        data = request.body
 
-        url = "http://ec2-54-82-81-212.compute-1.amazonaws.com:8000/songPred"
-        try:
-            # r = requests.post(url, files = files)
-            r = requests.post(url, data=data, headers=headers)
-            print("request sending", r)
-        except:
-            print("error sending request")
-        # print("JSONdata['file']: ", JSONdata)
+        ACCESS_KEY = 'AKIAUNLOXSXREJISSC6D'
+        SECRET_KEY = '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'
+
+        username = request.user.username
+        # fileName = request.FILES['mySong'].name
+
+        with open('myfile.mp3', mode='wb') as f:
+            f.write(request.body)
+
+        f = open('myfile.mp3', mode='rb')
+
+        fileName = request.FILES['mySong'].name
+
+        conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
+        conn.upload(username + '/' + fileName, f, 'musictutor')
 
         return HttpResponse("success")
 
@@ -57,7 +63,7 @@ def loginPage(request):
             username = request.POST.get('username')
             password = request.POST.get('password')
 
-            user = authenticate(request, username = username, password = password)
+            user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
                 return redirect('home')

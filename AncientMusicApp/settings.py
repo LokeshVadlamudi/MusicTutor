@@ -29,6 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50000000 #50mb
 
 # Application definition
 
@@ -73,21 +74,6 @@ TEMPLATES = [
     },
 ]
 
-
-# AWS
-
-# If these are not defined, the EC2 instance profile and IAM role are used.
-# This requires you to add boto3 (or botocore, which is a dependency of boto3)
-# to your project dependencies.
-AWS_ACCESS_KEY_ID = 'AKIAUNLOXSXREJISSC6D'
-AWS_SECRET_ACCESS_KEY = 'r6HL8lS/SxIdNinI8MHutOAsbMY5oojyMmugL9Kg'
-
-AWS_STORAGE_BUCKET_NAME = 'musictutor'
-
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
 

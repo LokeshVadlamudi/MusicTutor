@@ -7,10 +7,10 @@
 {% block body %}
     <div style=" color: #5E5694">
         <center>
-            <form action="songPred" method="post" style="">
+            <form action="songPred" method="post" style="" enctype="multipart/form-data">
                 <label style="font-size: large; color: #6DDCBD">Upload the song!</label>
                 <br><br>
-                <input type="file" id="mySong" name="filename" class="btn btn-info">
+                <input type="file" id="mySong" name="mySong" class="btn btn-info">
                 <br>
                 <input type="submit" class="btn btn-success">
             </form>
