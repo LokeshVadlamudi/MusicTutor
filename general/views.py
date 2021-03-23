@@ -16,6 +16,25 @@ from django.contrib.auth import authenticate, login, logout
 import boto3
 from botocore.exceptions import NoCredentialsError
 import tinys3
+import keras, cv2
+
+#pylab
+import os
+import wave
+import pylab
+
+#conversion wav to png
+
+import librosa
+import pandas as pd
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import os
+from PIL import Image
+import pathlib
+import csv
 
 
 # Create your views here.
@@ -35,20 +54,39 @@ def predict_song(request):
         username = request.user.username
         # fileName = request.FILES['mySong'].name
 
-        with open('myfile.mp3', mode='wb') as f:
+        songname = 'mysong.mp3'
+        with open(songname, mode='wb') as f:
             f.write(request.body)
 
-        f = open('myfile.mp3', mode='rb')
-
+        f = open(songname, mode='rb')
         fileName = request.FILES['mySong'].name
+
 
         conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
         conn.upload(username + '/' + fileName, f, 'musictutor')
+
+        #converting to png file
+        cmap = plt.get_cmap('inferno')
+        y, sr = librosa.load(songname, mono=True)
+        plt.specgram(y, NFFT=2048, Fs=2, Fc=0, noverlap=128, cmap=cmap, sides='default', mode='default', scale='dB');
+        plt.axis('off')
+        plt.savefig('myfile.png')
+        plt.clf()
+        classifier = keras.models.load_model("cool.h5")
+        img = cv2.imread("myfile.png")
+        img = cv2.resize(img, (150, 150))  # resize the image
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        image = np.expand_dims(img, axis=0)
+        classifier.predict_classes(image)
+        print(classifier.predict_classes(image))
+        print('class is ' + str(classifier.predict_classes(image)[0]))
+
 
         return HttpResponse("success")
 
     if request.method == 'GET':
         return HttpResponse('nothing here')
+
 
 
 # user management
