@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Uploads
+{% endblock %}
+
+{% block body %}
+    <div>
+        {% for i,j in songList %}
+            <div>
+                <center>
+                    <label style="color: whitesmoke; font-size: larger">{{ i }}</label>
+                    <br>
+                    <audio controls>
+                        <source src={{ j }} type="audio/mp3">
+                    </audio>
+                </center>
+            </div>
+            <br>
+        {% endfor %}
+    </div>
+{% endblock %}

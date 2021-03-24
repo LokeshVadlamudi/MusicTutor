@@ -24,6 +24,8 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('uploads', views.uploads, name='uploads'),
+
 
     #song prediction
     path('songPred', views.predict_song),

@@ -17,18 +17,22 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 import tinys3
 import keras, cv2
+import d6tpipe
+import boto3
+import os
 
-#pylab
+# pylab
 import os
 import wave
 import pylab
 
-#conversion wav to png
+# conversion wav to png
 
 import librosa
 import pandas as pd
 import numpy as np
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
@@ -39,15 +43,52 @@ import csv
 
 # Create your views here.
 
+
 @login_required(login_url='login')
 def home(request):
-    return render(request, 'home.html')
+    username = request.user.username
+    context = {
+        'username': username
+    }
+    return render(request, 'home.html', context)
+
+
+@login_required(login_url='login')
+def uploads(request):
+    username = request.user.username
+
+    # print('inside uploads view')
+
+    access_key = 'AKIAUNLOXSXREJISSC6D'
+    secret_key = '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'
+
+    s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
+    bucket = s3.Bucket('musictutor')
+    # Iterates through all the objects, doing the pagination for you. Each obj
+    # is an ObjectSummary, so it doesn't contain the body. You'll need to call
+    # get to get the whole body.
+    objs = bucket.objects.filter(Prefix=username)
+
+    songList = []
+    for obj in objs:
+        key = obj.key
+        songName = key.split('/')[1]
+        songList.append((songName, 'https://musictutor.s3.amazonaws.com' + '/' + key))
+
+    # exampleURL = 'https://musictutor.s3.amazonaws.com/nupur/file_example_MP3_1MG.mp3'
+    # print(songList)
+
+    context = {
+        'songList': songList,
+        'username': username
+    }
+
+    return render(request, 'uploads.html', context)
 
 
 @csrf_exempt
 def predict_song(request):
     if request.method == 'POST':
-
         ACCESS_KEY = 'AKIAUNLOXSXREJISSC6D'
         SECRET_KEY = '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'
 
@@ -61,11 +102,10 @@ def predict_song(request):
         f = open(songname, mode='rb')
         fileName = request.FILES['mySong'].name
 
-
         conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
         conn.upload(username + '/' + fileName, f, 'musictutor')
 
-        #converting to png file
+        # converting to png file
         cmap = plt.get_cmap('inferno')
         y, sr = librosa.load(songname, mono=True)
         plt.specgram(y, NFFT=2048, Fs=2, Fc=0, noverlap=128, cmap=cmap, sides='default', mode='default', scale='dB');
@@ -81,12 +121,10 @@ def predict_song(request):
         print(classifier.predict_classes(image))
         print('class is ' + str(classifier.predict_classes(image)[0]))
 
-
         return HttpResponse("success")
 
     if request.method == 'GET':
         return HttpResponse('nothing here')
-
 
 
 # user management
