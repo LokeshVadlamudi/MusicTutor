@@ -26,6 +26,8 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('uploads', views.uploads, name='uploads'),
 
+    path('chat/', include('chat.urls')),
+
 
     #song prediction
     path('songPred', views.predict_song),

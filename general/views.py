@@ -17,12 +17,9 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 import tinys3
 import keras, cv2
-import d6tpipe
-import boto3
 import os
 
 # pylab
-import os
 import wave
 import pylab
 
@@ -102,20 +99,20 @@ def predict_song(request):
         conn.upload(username + '/' + fileName, f, 'musictutor')
 
         # converting to png file
-        cmap = plt.get_cmap('inferno')
-        y, sr = librosa.load(songname, mono=True)
-        plt.specgram(y, NFFT=2048, Fs=2, Fc=0, noverlap=128, cmap=cmap, sides='default', mode='default', scale='dB');
-        plt.axis('off')
-        plt.savefig('myfile.png')
-        plt.clf()
-        classifier = keras.models.load_model("cool.h5")
-        img = cv2.imread("myfile.png")
-        img = cv2.resize(img, (150, 150))  # resize the image
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        image = np.expand_dims(img, axis=0)
-        classifier.predict_classes(image)
-        print(classifier.predict_classes(image))
-        print('class is ' + str(classifier.predict_classes(image)[0]))
+        # cmap = plt.get_cmap('inferno')
+        # y, sr = librosa.load(songname, mono=True)
+        # plt.specgram(y, NFFT=2048, Fs=2, Fc=0, noverlap=128, cmap=cmap, sides='default', mode='default', scale='dB');
+        # plt.axis('off')
+        # plt.savefig('myfile.png')
+        # plt.clf()
+        # classifier = keras.models.load_model("cool.h5")
+        # img = cv2.imread("myfile.png")
+        # img = cv2.resize(img, (150, 150))  # resize the image
+        # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        # image = np.expand_dims(img, axis=0)
+        # classifier.predict_classes(image)
+        # print(classifier.predict_classes(image))
+        # print('class is ' + str(classifier.predict_classes(image)[0]))
 
         return HttpResponse("success")
 

@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'storages',
     'bootstrap4',
     'django_matplotlib',
+    'channels',
+    'chat'
 ]
 
 MIDDLEWARE = [
@@ -145,3 +147,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+ASGI_APPLICATION = "AncientMusicApp.routing.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
