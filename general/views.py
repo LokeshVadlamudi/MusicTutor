@@ -43,7 +43,6 @@ import csv
 
 # Create your views here.
 
-
 @login_required(login_url='login')
 def home(request):
     username = request.user.username
@@ -74,9 +73,6 @@ def uploads(request):
         key = obj.key
         songName = key.split('/')[1]
         songList.append((songName, 'https://musictutor.s3.amazonaws.com' + '/' + key))
-
-    # exampleURL = 'https://musictutor.s3.amazonaws.com/nupur/file_example_MP3_1MG.mp3'
-    # print(songList)
 
     context = {
         'songList': songList,

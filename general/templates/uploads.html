@@ -5,18 +5,27 @@
 {% endblock %}
 
 {% block body %}
-    <div>
-        {% for i,j in songList %}
-            <div>
-                <center>
-                    <label style="color: whitesmoke; font-size: larger">{{ i }}</label>
-                    <br>
-                    <audio controls>
-                        <source src={{ j }} type="audio/mp3">
-                    </audio>
-                </center>
-            </div>
+
+    <style>
+        .shad {
+            box-shadow: 5px 5px 20px;
+        }
+    </style>
+
+
+    <center>
+    {% for i,j in songList %}
+        <div class="card shad" style="width: 50%">
+
+            <label style="color: whitesmoke; font-size: larger">{{ i }}</label>
             <br>
-        {% endfor %}
-    </div>
+            <audio controls>
+                <source src={{ j }} type="audio/mp3">
+            </audio>
+
+        </div>
+        <br>
+    {% endfor %}
+    </center>
+
 {% endblock %}

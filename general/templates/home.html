@@ -5,15 +5,33 @@
 {% endblock %}
 
 {% block body %}
+    <style>
+        .shad {
+            box-shadow: 5px 5px 20px;
+        }
+    </style>
+
     <div style=" color: #5E5694">
         <center>
-            <form action="songPred" method="post" style="" enctype="multipart/form-data">
-                <label style="font-size: large; color: #6DDCBD">Upload the song!</label>
-                <br><br>
-                <input type="file" id="mySong" name="mySong" class="btn btn-info">
-                <br>
-                <input type="submit" class="btn btn-success">
-            </form>
+            <div class="card shad" style="width: 50%">
+                <form action="songPred" method="post" style="" enctype="multipart/form-data">
+
+                    <label style="font-size: large; color: #6DDCBD">Upload the song!</label>
+                    <br><br>
+                    <input type="file" id="mySong" name="mySong" class="btn btn-info">
+                    <br>
+                    <label for="cars">Choose a Raga:</label>
+
+                    <select name="raga" id="raga">
+                        <option value="Bhairavi">Bhairavi</option>
+                        <option value="saa">Saab</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                    </select>
+
+                    <input type="submit" class="btn btn-success">
+                </form>
+            </div>
         </center>
     </div>
 {% endblock %}
