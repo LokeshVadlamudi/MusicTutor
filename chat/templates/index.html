@@ -1,10 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-//chatroom
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}
+    Chat Rooms
+{% endblock %}
+
+{% block body %}
+    <style>
+        .shad {
+            box-shadow: 5px 5px 20px;
+        }
+    </style>
+
+    <div style=" color: #5E5694">
+        <center>
+            <div class="card shad" style="width: 50%">
+                <a href="GeneralChat" class="btn btn-primary">General Chat</a>
+                <a href="ImproveVocals" class="btn btn-danger">Improve Vocals</a>
+            </div>
+        </center>
+    </div>
+{% endblock %}
