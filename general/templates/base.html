@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>{% block title %}  {% endblock %} - Appreciating Music Using AI</title>
+    <title>{% block title %}  {% endblock %} - Appreciating Music</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
@@ -18,44 +18,43 @@
 
     </style>
 
-{#    <link rel="stylesheet" type="text/css" href="{% static '/css/main.css' %}">#}
+    {#    <link rel="stylesheet" type="text/css" href="{% static '/css/main.css' %}">#}
 
     <link rel="stylesheet" href={% static "css/main.css" %}>
 
 
 </head>
 
-<body  style=" background-image: url('{% static "images/background.jpeg" %}');">
-<div style="">
-    <div class="container">
-        <nav class="navbar navbar-inverse">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="/">Music Tutor</a>
-                </div>
-                <ul class="nav navbar-nav ml-auto">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="{% url 'uploads' %}">Uploads</a></li>
-                    <li><a href="#">Profile</a></li>
-                    <li><a href="{% url 'index' %}">Chat Rooms</a></li>
-                </ul>
-                <ul>
-                    <a style="float: right" class="btn btn-danger" href="{% url 'logout' %}">Logout</a>
-                </ul>
-            </div>
-        </nav>
-    </div>
+<body style=" background-image: url('{% static "images/Earthly.jpg" %}');">
+<div class="container" style="height: 100%">
 
-    <div>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Music Tutor</a>
+            </div>
+            <ul class="nav navbar-nav ml-auto">
+                <li><a href="/">Home</a></li>
+{#                <li><a href="{% url 'uploads' %}">Uploads</a></li>#}
+                <li><a href="#">Profile</a></li>
+                <li><a href="{% url 'index' %}">Chat Rooms</a></li>
+            </ul>
+            <ul>
+                <a style="float: right; border-radius: 30%" class="btn btn-danger" href="{% url 'logout' %}">Logout</a>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="" style="height: 100%">
 
         {% block body %}
 
         {% endblock %}
 
     </div>
-
-
 </div>
+
 </body>
 
 

@@ -43,9 +43,36 @@ import csv
 @login_required(login_url='login')
 def home(request):
     username = request.user.username
+
+
+    #uploads
+
+    access_key = 'AKIAUNLOXSXREJISSC6D'
+    secret_key = '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'
+
+    s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
+    bucket = s3.Bucket('musictutor')
+    # Iterates through all the objects, doing the pagination for you. Each obj
+    # is an ObjectSummary, so it doesn't contain the body. You'll need to call
+    # get to get the whole body.
+    objs = bucket.objects.filter(Prefix=username)
+
+    songList = []
+
+    try:
+        for obj in objs:
+            key = obj.key
+            songName = key.split('/')[1]
+            songList.append((songName, 'https://musictutor.s3.amazonaws.com' + '/' + key))
+    except:
+        songList = []
+
     context = {
+        'songList': songList,
         'username': username
     }
+
+
     return render(request, 'home.html', context)
 
 
@@ -114,7 +141,7 @@ def predict_song(request):
         # print(classifier.predict_classes(image))
         # print('class is ' + str(classifier.predict_classes(image)[0]))
 
-        return HttpResponse("success")
+        return redirect('/')
 
     if request.method == 'GET':
         return HttpResponse('nothing here')
