@@ -41,11 +41,12 @@ import csv
 # Create your views here.
 
 @login_required(login_url='login')
+@csrf_exempt
 def home(request):
+
     username = request.user.username
 
-
-    #uploads
+    # uploads
 
     access_key = 'AKIAUNLOXSXREJISSC6D'
     secret_key = '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'
@@ -69,9 +70,68 @@ def home(request):
 
     context = {
         'songList': songList,
-        'username': username
+        'username': username,
+        'raga' : None,
     }
 
+    #predict song
+
+    if request.method == 'POST':
+        ACCESS_KEY = 'AKIAUNLOXSXREJISSC6D'
+        SECRET_KEY = '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'
+
+        username = request.user.username
+        # fileName = request.FILES['mySong'].name
+
+        songname = 'mysong.mp3'
+        with open(songname, mode='wb') as f:
+            f.write(request.body)
+
+        f = open(songname, mode='rb')
+        fileName = request.FILES['mySong'].name
+
+        conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
+        conn.upload(username + '/' + fileName, f, 'musictutor')
+
+        # sending s3 link to prediction microservice.
+        s3link = 'https://musictutor.s3.amazonaws.com/' + username + '/' + fileName
+
+        print(s3link)
+
+        def predict_raga(fp):
+            y, sr = librosa.load(fp, res_type='kaiser_best')
+            mfcc = librosa.feature.mfcc(y=y, sr=22050, hop_length=512, n_mfcc=13)
+            mfcc = mfcc.T
+
+            data = {
+                "mfcc": []
+            }
+
+            data["mfcc"].append(mfcc.tolist())
+
+            X = np.array(data["mfcc"])
+
+            data = json.dumps({"signature_name": "serving_default", "instances": X.tolist()})
+            print('Data: {} ... {}'.format(data[:50], data[len(data) - 52:]))
+
+            headers = {"content-type": "application/json"}
+            json_response = requests.post('http://34.72.124.124:8501/v1/models/classify_raga:predict', data=data,
+                                          headers=headers)
+
+            predictions = json.loads(json_response.text)['predictions']
+            class_names = ['De╠äs╠ü',
+                           'Bhairavi',
+                           'Bila╠äsakha╠äni╠ä to╠äd╠úi╠ä',
+                           'Ba╠äge╠äs╠üri╠ä',
+                           'Ahira bhairav']
+
+
+            return (class_names[np.argmax(predictions)])
+        raga = predict_raga('mysong.mp3')
+
+        print(raga)
+
+        context["raga"] = raga
 
     return render(request, 'home.html', context)
 
@@ -125,23 +185,49 @@ def predict_song(request):
         conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
         conn.upload(username + '/' + fileName, f, 'musictutor')
 
-        # converting to png file
-        # cmap = plt.get_cmap('inferno')
-        # y, sr = librosa.load(songname, mono=True)
-        # plt.specgram(y, NFFT=2048, Fs=2, Fc=0, noverlap=128, cmap=cmap, sides='default', mode='default', scale='dB');
-        # plt.axis('off')
-        # plt.savefig('myfile.png')
-        # plt.clf()
-        # classifier = keras.models.load_model("cool.h5")
-        # img = cv2.imread("myfile.png")
-        # img = cv2.resize(img, (150, 150))  # resize the image
-        # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        # image = np.expand_dims(img, axis=0)
-        # classifier.predict_classes(image)
-        # print(classifier.predict_classes(image))
-        # print('class is ' + str(classifier.predict_classes(image)[0]))
+        # sending s3 link to prediction microservice.
+        s3link = 'https://musictutor.s3.amazonaws.com/' + username + '/' + fileName
 
-        return redirect('/')
+        print(s3link)
+
+        def predict_raga(fp):
+            y, sr = librosa.load(fp, res_type='kaiser_best')
+            mfcc = librosa.feature.mfcc(y=y, sr=22050, hop_length=512, n_mfcc=13)
+            mfcc = mfcc.T
+
+            data = {
+                "mfcc": []
+            }
+
+            data["mfcc"].append(mfcc.tolist())
+
+            X = np.array(data["mfcc"])
+
+            data = json.dumps({"signature_name": "serving_default", "instances": X.tolist()})
+            print('Data: {} ... {}'.format(data[:50], data[len(data) - 52:]))
+
+            headers = {"content-type": "application/json"}
+            json_response = requests.post('http://34.72.124.124:8501/v1/models/classify_raga:predict', data=data,
+                                          headers=headers)
+
+            predictions = json.loads(json_response.text)['predictions']
+            class_names = ['De╠äs╠ü',
+                           'Bhairavi',
+                           'Bila╠äsakha╠äni╠ä to╠äd╠úi╠ä',
+                           'Ba╠äge╠äs╠üri╠ä',
+                           'Ahira bhairav']
+
+
+            return (class_names[np.argmax(predictions)])
+        raga = predict_raga('mysong.mp3')
+
+        print(raga)
+
+        content = {
+            "raga": raga
+        }
+
+        return redirect('/', content)
 
     if request.method == 'GET':
         return HttpResponse('nothing here')

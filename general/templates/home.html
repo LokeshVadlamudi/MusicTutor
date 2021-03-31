@@ -12,28 +12,26 @@
     </style>
 
 
-    <div style=" color: #5E5694; margin-top: 5%">
+    <div style="color: #5E5694; margin-top: 5%">
         <center>
             <h3 style="color: white; ">Predict Raga</h3>
             <div class="card shad" style=" border-radius: 20px; padding: 1%">
-                <form action="songPred" method="post" enctype="multipart/form-data">
+                <form action="" method="post" enctype="multipart/form-data">
                     <br>
                     <input type="file" id="mySong" name="mySong" class="btn btn-info" style="border-radius: 20px; ">
                     <br>
-                    {#                    <label for="cars">Choose a Raga:</label>#}
 
-                    {#                    <select name="raga" id="raga" style="border-radius: 20px;">#}
-                    {#                        <option value="Bhairavi">Bhairavi</option>#}
-                    {#                        <option value="saa">Saab</option>#}
-                    {#                        <option value="mercedes">Mercedes</option>#}
-                    {#                        <option value="audi">Audi</option>#}
-                    {#                    </select>#}
                     <input type="submit" style="border-radius: 20px;" class="btn btn-success">
 
                 </form>
             </div>
         </center>
     </div>
+
+    {% if raga %}
+        <center><div style="color: whitesmoke">  Raga is : {{ raga }} </div></center>
+    {% endif %}
+
 
 
     <div style=" color: #5E5694; margin-top: 5%">
@@ -52,7 +50,7 @@
                                          style="padding: 1%; margin: 1%; border-radius: 20px; ">
                                         <div class="card-body">
                                             <center>
-                                                <p style="font-style: oblique">Name : {{ i }}</p>
+                                                <p style="font-style: oblique;color: whitesmoke">Name : {{ i }}</p>
                                                 <audio controls>
                                                     <source src={{ j }} type="audio/mp3">
                                                 </audio>
