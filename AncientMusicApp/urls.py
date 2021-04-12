@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from general import views, songViews
+from general import views, songViews, interactiveViews
 
 from django.conf.urls import url
 
@@ -23,10 +23,18 @@ urlpatterns = [
 
 
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
+    # path('', views.home, name='home'),
     path('uploads', views.uploads, name='uploads'),
 
     path('chat/', include('chat.urls')),
+
+
+
+    #interactive paths
+    path('', interactiveViews.selectRaga, name='home'),
+    path('selectRaga', interactiveViews.selectRaga),
+
+    path('uploadSong', interactiveViews.uploadRaga, name='uploadSong'),
 
 
     #song prediction
