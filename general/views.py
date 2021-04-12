@@ -37,8 +37,12 @@ from PIL import Image
 import pathlib
 import csv
 
+from .conf import ACCESS_KEY, SECRET_KEY
 
 # Create your views here.
+
+access_key = ACCESS_KEY
+secret_key = SECRET_KEY
 
 @login_required(login_url='login')
 @csrf_exempt
@@ -47,9 +51,6 @@ def home(request):
     username = request.user.username
 
     # uploads
-
-    access_key = 'AKIAUNLOXSXREJISSC6D'
-    secret_key = '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'
 
     s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
     bucket = s3.Bucket('musictutor')
@@ -64,7 +65,7 @@ def home(request):
         for obj in objs:
             key = obj.key
             songName = key.split('/')[1]
-            songList.append((songName, 'https://musictutor.s3.amazonaws.com' + '/' + key))
+            songList.append((songName, 'https://musictutor-storage.s3.amazonaws.com' + '/' + key))
     except:
         songList = []
 
@@ -77,8 +78,6 @@ def home(request):
     #predict song
 
     if request.method == 'POST':
-        ACCESS_KEY = 'AKIAUNLOXSXREJISSC6D'
-        SECRET_KEY = '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'
 
         username = request.user.username
         # fileName = request.FILES['mySong'].name
@@ -140,15 +139,11 @@ def home(request):
 
 
 
-
 @login_required(login_url='login')
 def uploads(request):
     username = request.user.username
 
     # print('inside uploads view')
-
-    access_key = 'AKIAUNLOXSXREJISSC6D'
-    secret_key = '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'
 
     s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
     bucket = s3.Bucket('musictutor')
@@ -161,7 +156,7 @@ def uploads(request):
     for obj in objs:
         key = obj.key
         songName = key.split('/')[1]
-        songList.append((songName, 'https://musictutor.s3.amazonaws.com' + '/' + key))
+        songList.append((songName, 'https://musictutor-storage.s3.amazonaws.com' + '/' + key))
 
     context = {
         'songList': songList,
@@ -174,8 +169,6 @@ def uploads(request):
 @csrf_exempt
 def predict_song(request):
     if request.method == 'POST':
-        ACCESS_KEY = 'AKIAUNLOXSXREJISSC6D'
-        SECRET_KEY = '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'
 
         username = request.user.username
         # fileName = request.FILES['mySong'].name
@@ -191,7 +184,7 @@ def predict_song(request):
         conn.upload(username + '/' + fileName, f, 'musictutor')
 
         # sending s3 link to prediction microservice.
-        s3link = 'https://musictutor.s3.amazonaws.com/' + username + '/' + fileName
+        s3link = 'https://musictutor-storage.s3.amazonaws.com/' + username + '/' + fileName
 
         print(s3link)
 

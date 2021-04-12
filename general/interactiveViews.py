@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
+
 # s3 upload
 import boto3
 from botocore.exceptions import NoCredentialsError
@@ -37,6 +38,9 @@ from PIL import Image
 import pathlib
 import csv
 
+# import config
+
+from .conf import ACCESS_KEY, SECRET_KEY
 
 @login_required(login_url='login')
 @csrf_exempt
@@ -70,9 +74,6 @@ def uploadRaga(request):
         # audio_data = request.FILES.get('data')
         # path = default_storage.save('123' + '.mp3', ContentFile(audio_data.read()))
 
-        ACCESS_KEY = 'AKIA4BFL45UA4BYQ7XLP'
-
-        SECRET_KEY = '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'
 
         context = {}
 
