@@ -115,7 +115,7 @@ def home(request):
             print('Data: {} ... {}'.format(data[:50], data[len(data) - 52:]))
 
             headers = {"content-type": "application/json"}
-            json_response = requests.post('http://34.72.124.124:8501/v1/models/classify_raga:predict', data=data,
+            json_response = requests.post('http://35.188.146.134:8501/v1/models/classify_raga:predict', data=data,
                                           headers=headers)
 
             predictions = json.loads(json_response.text)['predictions']
@@ -125,7 +125,7 @@ def home(request):
                            'Ba╠äge╠äs╠üri╠ä',
                            'Ahira bhairav']
 
-
+            print(predictions)
             return (class_names[np.argmax(predictions)])
         raga = predict_raga('mysong.mp3')
 
@@ -134,6 +134,11 @@ def home(request):
         context["raga"] = raga
 
     return render(request, 'home.html', context)
+
+
+
+
+
 
 
 @login_required(login_url='login')
@@ -231,6 +236,12 @@ def predict_song(request):
 
     if request.method == 'GET':
         return HttpResponse('nothing here')
+
+
+
+
+
+
 
 
 # user management

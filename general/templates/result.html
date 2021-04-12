@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}
+Result of Prediction
+{% endblock %}
+
+{% block body %}
+<style>
+    .shad {
+        box-shadow: 5px 5px 20px;
+    }
+</style>
+
+
+<div style="color: #5E5694; margin-top: 5%">
+    <center>
+        <h3 style="color: white; ">Result</h3>
+
+        <div class="card shad" style=" border-radius: 20px; padding: 1%">
+
+            <label style="color: whitesmoke;">Predicted Closest Raga : {{ raga }}</label>
+
+            <form action="" method="post" enctype="multipart/form-data">
+                <br>
+                
+                <center>
+                    <div style="color: whitesmoke"> Confidence score : 90% </div>
+                </center>
+
+                <br>
+                <input type="submit" style="border-radius: 20px;" class="btn btn-success" value="Get Recommendations">
+                <br>
+            </form>
+        </div>
+    </center>
+</div>
+
+
+
+{% endblock %}

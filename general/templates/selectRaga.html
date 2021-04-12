@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}
+Select Raga Type
+{% endblock %}
+
+{% block body %}
+<style>
+    .shad {
+        box-shadow: 5px 5px 20px;
+    }
+</style>
+
+
+<div style="color: #5E5694; margin-top: 5%">
+    <center>
+        <h3 style="color: white; ">Select Raga To Sing!!!!</h3>
+        <div class="card shad" style=" border-radius: 20px; padding: 1%">
+            <form action="" method="post" enctype="multipart/form-data">
+
+                <!-- <input type="file" id="mySong" name="mySong" class="btn btn-info" style="border-radius: 20px; "> -->
+
+
+                <label for="raga" style="color: white;">Choose a Raga:</label>
+                <br>
+                <select name="raga" id="raga">
+                    <option value="Bhairavi">Bhairavi</option>
+                    <option value="Ahirabhairav">Ahira bhairav</option>
+                    <option value="De╠äs╠ü">De╠äs╠ü</option>
+                    <option value="Bila╠äsakha╠äni╠ä to╠äd╠úi╠ä">Bila╠äsakha╠äni╠ä to╠äd╠úi╠ä</option>
+                </select>
+
+                <br>
+                <br>
+                <input type="submit" style="border-radius: 20px;" class="btn btn-success" value="Select">
+                <br>
+            </form>
+        </div>
+    </center>
+</div>
+
+{% if raga %}
+<center>
+    <div style="color: whitesmoke"> Raga is : {{ raga }} </div>
+</center>
+{% endif %}
+
+
+{% endblock %}
