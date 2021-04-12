@@ -38,9 +38,13 @@ from PIL import Image
 import pathlib
 import csv
 
+#import mongo
+import pymongo
+
+
 # import config
 
-from .conf import ACCESS_KEY, SECRET_KEY
+from .conf import ACCESS_KEY, SECRET_KEY, settings
 
 @login_required(login_url='login')
 @csrf_exempt
@@ -90,15 +94,16 @@ def uploadRaga(request):
             context = {
                 'error' : 'Select the audio file'
             }
+            fileName = 'undefined'
             return render(request, 'uploadMethod.html', context)
 
         conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
         conn.upload(username + '/' + fileName, f, 'musictutor-storage')
 
         # sending s3 link to prediction microservice.
-        s3link = 'https://musictutor-storage.s3.amazonaws.com/' + username + '/' + fileName
+        songLink = 'https://musictutor-storage.s3.amazonaws.com/' + username + '/' + fileName
 
-        print(s3link)
+        
 
         def predict_raga(fp):
             y, sr = librosa.load(fp, res_type='kaiser_best')
@@ -131,13 +136,45 @@ def uploadRaga(request):
             return (class_names[np.argmax(predictions)])
 
         
+
+        # predict the raga and confidence score using the tensorflow serving model 
+
         # raga = predict_raga('mysong.mp3')
 
         raga = 'Bhairavi'
-
-        print(raga)
-
+        
         context["raga"] = raga
+        
+        confidence = "90%"
+
+        context["confidence"] = confidence
+
+
+
+        #send the data to mongo db
+
+        #username, song name, song link, predicted raga, predicted confidence score
+
+
+
+        mongodbUrl = settings['mongoUrl']
+        db = settings['database']
+        col = settings['songCol']
+
+
+        
+
+        myclient = pymongo.MongoClient(mongodbUrl)
+        mydb = myclient[db]
+        mycol = mydb[col]
+
+        doc = { "username": username, "fileName": fileName, "songLink": songLink, "predictedRaga":raga, "confidenceScore":confidence }
+
+        try:
+            mycol.insert_one(doc)
+        except:
+            print('failed to add details into db')
+       
         
         return render(request,'result.html', context)
 

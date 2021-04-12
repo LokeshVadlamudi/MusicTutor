@@ -146,7 +146,7 @@ def uploads(request):
     # print('inside uploads view')
 
     s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
-    bucket = s3.Bucket('musictutor')
+    bucket = s3.Bucket('musictutor-storage')
     # Iterates through all the objects, doing the pagination for you. Each obj
     # is an ObjectSummary, so it doesn't contain the body. You'll need to call
     # get to get the whole body.
