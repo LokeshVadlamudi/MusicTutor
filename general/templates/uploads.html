@@ -14,13 +14,17 @@
 
 
     <center>
-    {% for i,j in songList %}
+    {% for i in songList %}
         <div class="card shad" style="width: 50%">
 
-            <label style="color: whitesmoke; font-size: larger">{{ i }}</label>
+            <label style="color: whitesmoke; font-size: larger">File : {{ i.fileName }}</label>
+            <br>
+            <label style="color: whitesmoke; font-size: larger">Predicted Raga : {{ i.predictedRaga }}</label>
+            <br>
+            <label style="color: whitesmoke; font-size: larger">Confidence Score : {{ i.confidenceScore }}</label>
             <br>
             <audio controls>
-                <source src={{ j }} type="audio/mp3">
+                <source src={{ i.songLink }} type="audio/mp3">
             </audio>
 
         </div>

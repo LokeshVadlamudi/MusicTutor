@@ -37,102 +37,117 @@ from PIL import Image
 import pathlib
 import csv
 
-from .conf import ACCESS_KEY, SECRET_KEY
+from .conf import ACCESS_KEY, SECRET_KEY, settings
+
+#import mongo
+import pymongo
 
 # Create your views here.
 
 access_key = ACCESS_KEY
 secret_key = SECRET_KEY
 
-@login_required(login_url='login')
-@csrf_exempt
-def home(request):
+# @login_required(login_url='login')
+# @csrf_exempt
+# def home(request):
 
-    username = request.user.username
+#     username = request.user.username
 
-    # uploads
+#     #get docs from mongodb - songs collection
+#     mongodbUrl = settings['mongoUrl']
+#     db = settings['database']
+#     col = settings['songCol']
 
-    s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
-    bucket = s3.Bucket('musictutor')
-    # Iterates through all the objects, doing the pagination for you. Each obj
-    # is an ObjectSummary, so it doesn't contain the body. You'll need to call
-    # get to get the whole body.
-    objs = bucket.objects.filter(Prefix=username)
+#     myclient = pymongo.MongoClient(mongodbUrl)
+#     mydb = myclient[db]
+#     mycol = mydb[col]
 
-    songList = []
+#     for x in mycol.find({},{ "username": username}):
+#         print(x)
 
-    try:
-        for obj in objs:
-            key = obj.key
-            songName = key.split('/')[1]
-            songList.append((songName, 'https://musictutor-storage.s3.amazonaws.com' + '/' + key))
-    except:
-        songList = []
+#     # uploads
 
-    context = {
-        'songList': songList,
-        'username': username,
-        'raga' : None,
-    }
+#     # s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
+#     # bucket = s3.Bucket('musictutor')
+#     # # Iterates through all the objects, doing the pagination for you. Each obj
+#     # # is an ObjectSummary, so it doesn't contain the body. You'll need to call
+#     # # get to get the whole body.
+#     # objs = bucket.objects.filter(Prefix=username)
 
-    #predict song
+#     # songList = []
 
-    if request.method == 'POST':
+#     # try:
+#     #     for obj in objs:
+#     #         key = obj.key
+#     #         songName = key.split('/')[1]
+#     #         songList.append((songName, 'https://musictutor-storage.s3.amazonaws.com' + '/' + key))
+#     # except:
+#     #     songList = []
 
-        username = request.user.username
-        # fileName = request.FILES['mySong'].name
+#     context = {
+#         'songList': songList,
+#         'username': username,
+#         'raga' : None,
+#     }
 
-        songname = 'mysong.mp3'
-        with open(songname, mode='wb') as f:
-            f.write(request.body)
+#     #predict song
 
-        f = open(songname, mode='rb')
-        fileName = request.FILES['mySong'].name
+#     if request.method == 'POST':
 
-        conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
-        conn.upload(username + '/' + fileName, f, 'musictutor')
+#         username = request.user.username
+#         # fileName = request.FILES['mySong'].name
 
-        # sending s3 link to prediction microservice.
-        s3link = 'https://musictutor.s3.amazonaws.com/' + username + '/' + fileName
+#         songname = 'mysong.mp3'
+#         with open(songname, mode='wb') as f:
+#             f.write(request.body)
 
-        print(s3link)
+#         f = open(songname, mode='rb')
+#         fileName = request.FILES['mySong'].name
 
-        def predict_raga(fp):
-            y, sr = librosa.load(fp, res_type='kaiser_best')
-            mfcc = librosa.feature.mfcc(y=y, sr=22050, hop_length=512, n_mfcc=13)
-            mfcc = mfcc.T
+#         conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
+#         conn.upload(username + '/' + fileName, f, 'musictutor')
 
-            data = {
-                "mfcc": []
-            }
+#         # sending s3 link to prediction microservice.
+#         s3link = 'https://musictutor.s3.amazonaws.com/' + username + '/' + fileName
 
-            data["mfcc"].append(mfcc.tolist())
+#         print(s3link)
 
-            X = np.array(data["mfcc"])
+#         def predict_raga(fp):
+#             y, sr = librosa.load(fp, res_type='kaiser_best')
+#             mfcc = librosa.feature.mfcc(y=y, sr=22050, hop_length=512, n_mfcc=13)
+#             mfcc = mfcc.T
 
-            data = json.dumps({"signature_name": "serving_default", "instances": X.tolist()})
-            print('Data: {} ... {}'.format(data[:50], data[len(data) - 52:]))
+#             data = {
+#                 "mfcc": []
+#             }
 
-            headers = {"content-type": "application/json"}
-            json_response = requests.post('http://35.188.146.134:8501/v1/models/classify_raga:predict', data=data,
-                                          headers=headers)
+#             data["mfcc"].append(mfcc.tolist())
 
-            predictions = json.loads(json_response.text)['predictions']
-            class_names = ['De╠äs╠ü',
-                           'Bhairavi',
-                           'Bila╠äsakha╠äni╠ä to╠äd╠úi╠ä',
-                           'Ba╠äge╠äs╠üri╠ä',
-                           'Ahira bhairav']
+#             X = np.array(data["mfcc"])
 
-            print(predictions)
-            return (class_names[np.argmax(predictions)])
-        raga = predict_raga('mysong.mp3')
+#             data = json.dumps({"signature_name": "serving_default", "instances": X.tolist()})
+#             print('Data: {} ... {}'.format(data[:50], data[len(data) - 52:]))
 
-        print(raga)
+#             headers = {"content-type": "application/json"}
+#             json_response = requests.post('http://35.188.146.134:8501/v1/models/classify_raga:predict', data=data,
+#                                           headers=headers)
 
-        context["raga"] = raga
+#             predictions = json.loads(json_response.text)['predictions']
+#             class_names = ['De╠äs╠ü',
+#                            'Bhairavi',
+#                            'Bila╠äsakha╠äni╠ä to╠äd╠úi╠ä',
+#                            'Ba╠äge╠äs╠üri╠ä',
+#                            'Ahira bhairav']
 
-    return render(request, 'home.html', context)
+#             print(predictions)
+#             return (class_names[np.argmax(predictions)])
+#         raga = predict_raga('mysong.mp3')
+
+#         print(raga)
+
+#         context["raga"] = raga
+
+#     return render(request, 'home.html', context)
 
 
 
@@ -141,22 +156,43 @@ def home(request):
 
 @login_required(login_url='login')
 def uploads(request):
-    username = request.user.username
 
     # print('inside uploads view')
 
-    s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
-    bucket = s3.Bucket('musictutor-storage')
-    # Iterates through all the objects, doing the pagination for you. Each obj
-    # is an ObjectSummary, so it doesn't contain the body. You'll need to call
-    # get to get the whole body.
-    objs = bucket.objects.filter(Prefix=username)
+    username = request.user.username
+
+    #get docs from mongodb - songs collection
+    mongodbUrl = settings['mongoUrl']
+    db = settings['database']
+    col = settings['songCol']
+
+    myclient = pymongo.MongoClient(mongodbUrl)
+    mydb = myclient[db]
+    mycol = mydb[col]
 
     songList = []
-    for obj in objs:
-        key = obj.key
-        songName = key.split('/')[1]
-        songList.append((songName, 'https://musictutor-storage.s3.amazonaws.com' + '/' + key))
+
+    myquery = { "username": username }
+    for x in mycol.find(myquery):
+        print(x)
+        songList.append(x)
+
+
+
+
+
+    # s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
+    # bucket = s3.Bucket('musictutor-storage')
+    # # Iterates through all the objects, doing the pagination for you. Each obj
+    # # is an ObjectSummary, so it doesn't contain the body. You'll need to call
+    # # get to get the whole body.
+    # objs = bucket.objects.filter(Prefix=username)
+
+    # songList = []
+    # for obj in objs:
+    #     key = obj.key
+    #     songName = key.split('/')[1]
+    #     songList.append((songName, 'https://musictutor-storage.s3.amazonaws.com' + '/' + key))
 
     context = {
         'songList': songList,
@@ -166,69 +202,69 @@ def uploads(request):
     return render(request, 'uploads.html', context)
 
 
-@csrf_exempt
-def predict_song(request):
-    if request.method == 'POST':
+# @csrf_exempt
+# def predict_song(request):
+#     if request.method == 'POST':
 
-        username = request.user.username
-        # fileName = request.FILES['mySong'].name
+#         username = request.user.username
+#         # fileName = request.FILES['mySong'].name
 
-        songname = 'mysong.mp3'
-        with open(songname, mode='wb') as f:
-            f.write(request.body)
+#         songname = 'mysong.mp3'
+#         with open(songname, mode='wb') as f:
+#             f.write(request.body)
 
-        f = open(songname, mode='rb')
-        fileName = request.FILES['mySong'].name
+#         f = open(songname, mode='rb')
+#         fileName = request.FILES['mySong'].name
 
-        conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
-        conn.upload(username + '/' + fileName, f, 'musictutor')
+#         conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
+#         conn.upload(username + '/' + fileName, f, 'musictutor')
 
-        # sending s3 link to prediction microservice.
-        s3link = 'https://musictutor-storage.s3.amazonaws.com/' + username + '/' + fileName
+#         # sending s3 link to prediction microservice.
+#         s3link = 'https://musictutor-storage.s3.amazonaws.com/' + username + '/' + fileName
 
-        print(s3link)
+#         print(s3link)
 
-        def predict_raga(fp):
-            y, sr = librosa.load(fp, res_type='kaiser_best')
-            mfcc = librosa.feature.mfcc(y=y, sr=22050, hop_length=512, n_mfcc=13)
-            mfcc = mfcc.T
+#         def predict_raga(fp):
+#             y, sr = librosa.load(fp, res_type='kaiser_best')
+#             mfcc = librosa.feature.mfcc(y=y, sr=22050, hop_length=512, n_mfcc=13)
+#             mfcc = mfcc.T
 
-            data = {
-                "mfcc": []
-            }
+#             data = {
+#                 "mfcc": []
+#             }
 
-            data["mfcc"].append(mfcc.tolist())
+#             data["mfcc"].append(mfcc.tolist())
 
-            X = np.array(data["mfcc"])
+#             X = np.array(data["mfcc"])
 
-            data = json.dumps({"signature_name": "serving_default", "instances": X.tolist()})
-            print('Data: {} ... {}'.format(data[:50], data[len(data) - 52:]))
+#             data = json.dumps({"signature_name": "serving_default", "instances": X.tolist()})
+#             print('Data: {} ... {}'.format(data[:50], data[len(data) - 52:]))
 
-            headers = {"content-type": "application/json"}
-            json_response = requests.post('http://34.72.124.124:8501/v1/models/classify_raga:predict', data=data,
-                                          headers=headers)
+#             headers = {"content-type": "application/json"}
+#             json_response = requests.post('http://34.72.124.124:8501/v1/models/classify_raga:predict', data=data,
+#                                           headers=headers)
 
-            predictions = json.loads(json_response.text)['predictions']
-            class_names = ['De╠äs╠ü',
-                           'Bhairavi',
-                           'Bila╠äsakha╠äni╠ä to╠äd╠úi╠ä',
-                           'Ba╠äge╠äs╠üri╠ä',
-                           'Ahira bhairav']
+#             predictions = json.loads(json_response.text)['predictions']
+#             class_names = ['De╠äs╠ü',
+#                            'Bhairavi',
+#                            'Bila╠äsakha╠äni╠ä to╠äd╠úi╠ä',
+#                            'Ba╠äge╠äs╠üri╠ä',
+#                            'Ahira bhairav']
 
 
-            return (class_names[np.argmax(predictions)])
-        raga = predict_raga('mysong.mp3')
+#             return (class_names[np.argmax(predictions)])
+#         raga = predict_raga('mysong.mp3')
 
-        print(raga)
+#         print(raga)
 
-        content = {
-            "raga": raga
-        }
+#         content = {
+#             "raga": raga
+#         }
 
-        return redirect('/', content)
+#         return redirect('/', content)
 
-    if request.method == 'GET':
-        return HttpResponse('nothing here')
+#     if request.method == 'GET':
+#         return HttpResponse('nothing here')
 
 
 

@@ -38,7 +38,7 @@ urlpatterns = [
 
 
     #song prediction
-    path('songPred', views.predict_song),
+    # path('songPred', views.predict_song),
 
     # user management
     # login
