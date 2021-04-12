@@ -18,10 +18,11 @@ Result of Prediction
 
         <div class="card shad" style=" border-radius: 20px; padding: 1%">
 
-            <label style="color: whitesmoke;">Predicted Closest Raga : {{ raga }}</label>
+            
 
-            <form action="" method="post" enctype="multipart/form-data">
+            <form action="getRecommendations" method="post" enctype="multipart/form-data">
                 <br>
+                <label style="color: whitesmoke;" id="raga" name="raga" value={{raga}}>Predicted Closest Raga : {{ raga }}</label>
                 
                 <center>
                     <div style="color: whitesmoke"> Confidence score : 90% </div>
@@ -33,6 +34,23 @@ Result of Prediction
             </form>
         </div>
     </center>
+
+    {% if recommendations %}
+
+    <center>
+        <h3 style="color: white; ">Recommendations</h3>
+
+        {% for i in recommendations %}
+        <div class="card shad" style=" border-radius: 20px; padding: 1%">
+            <iframe width="420" height="315"
+            src={{i}}>
+            </iframe>
+            
+        </div>
+        {% endfor %}
+    </center>
+
+    {% endif %}
 </div>
 
 

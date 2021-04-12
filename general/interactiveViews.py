@@ -185,7 +185,48 @@ def uploadRaga(request):
 
 
 
+#get recommendations
 
+@login_required(login_url='login')
+@csrf_exempt
+def getRecommendations(request):
+    username = request.user.username
+
+    if request.method == 'POST':
+        ragaType = request.POST.get('raga','Bhairavi')
+        print(ragaType)
+
+
+        mongodbUrl = settings['mongoUrl']
+        db = settings['database']
+        # col = settings['songCol']
+        col = 'recommendations'
+
+
+        myclient = pymongo.MongoClient(mongodbUrl)
+        mydb = myclient[db]
+        mycol = mydb[col]
+
+        query = {"ragaType":ragaType}
+
+        print(mydb, mycol)
+        recommendations  = []
+        try:
+            result = mycol.find(query)
+            print("result", result)
+            
+        except:
+            result = ['']
+        
+
+        for i in result:
+            recommendations = i['songs']
+        
+        context = {
+            'recommendations' : recommendations
+        }
+        
+        return render(request,'result.html', context)
 
 
 

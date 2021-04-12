@@ -179,8 +179,6 @@ def uploads(request):
 
 
 
-
-
     # s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
     # bucket = s3.Bucket('musictutor-storage')
     # # Iterates through all the objects, doing the pagination for you. Each obj

@@ -36,6 +36,8 @@ urlpatterns = [
 
     path('uploadSong', interactiveViews.uploadRaga, name='uploadSong'),
 
+    path('getRecommendations', interactiveViews.getRecommendations, name='getRecommendations'),
+
 
     #song prediction
     # path('songPred', views.predict_song),

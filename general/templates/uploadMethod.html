@@ -18,9 +18,11 @@ Upload Method
 
         <div class="card shad" style=" border-radius: 20px; padding: 1%">
 
-            <label style="color: whitesmoke;">Selected Raga : {{ ragaType }}</label>
+            
 
             <form action="{% url 'uploadSong' %}" method="post" enctype="multipart/form-data">
+                <br>
+                <label style="color: whitesmoke;" id="raga" name="raga" value={{ragaType}} >Selected Raga : {{ ragaType }}</label>
                 <br>
                 <input type="file" id="mySong" name="mySong" class="btn btn-info" style="border-radius: 20px; ">
 
