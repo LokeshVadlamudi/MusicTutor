@@ -11,7 +11,7 @@ from .forms import CreateUserForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-
+import re
 
 # s3 upload
 import boto3
@@ -67,6 +67,12 @@ def selectRaga(request):
     return render(request, 'selectRaga.html', context)
 
 
+# @login_required(login_url='login')
+# @csrf_exempt
+def index(request):
+    return render(request, 'index.html')
+
+
 @login_required(login_url='login')
 @csrf_exempt
 def uploadRaga(request):
@@ -96,6 +102,9 @@ def uploadRaga(request):
             }
             fileName = 'undefined'
             return render(request, 'uploadMethod.html', context)
+
+        fileName = re.sub('\W+', '', fileName)
+
 
         conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
         conn.upload(username + '/' + fileName, f, 'musictutor-storage')
@@ -220,6 +229,7 @@ def getRecommendations(request):
         
 
         for i in result:
+            print(i)
             recommendations = i['songs']
         
         context = {

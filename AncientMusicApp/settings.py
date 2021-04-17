@@ -95,7 +95,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'CLIENT': {
-            'host': 'mongodb+srv://admin:' + urllib.parse.quote('admin') + '@cluster0.0rips.mongodb.net/test',
+            'host': 'mongodb+srv://admin:' + urllib.parse.quote('admin') + '@cluster0.0rips.mongodb.net/test'+'?ssl=true&ssl_cert_reqs=CERT_NONE',
             'username': 'admin',
             'password': 'admin',
             'authMechanism': 'SCRAM-SHA-1'

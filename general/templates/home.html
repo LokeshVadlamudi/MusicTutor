@@ -5,17 +5,13 @@
 {% endblock %}
 
 {% block body %}
-    <style>
-        .shad {
-            box-shadow: 5px 5px 20px;
-        }
-    </style>
 
 
-    <div style="color: #5E5694; margin-top: 5%">
-        <center>
+
+    <div>
+
             <h3 style="color: white; ">Predict Raga</h3>
-            <div class="card shad" style=" border-radius: 20px; padding: 1%">
+            <div>
                 <form action="" method="post" enctype="multipart/form-data">
                     <br>
                     <input type="file" id="mySong" name="mySong" class="btn btn-info" style="border-radius: 20px; ">
@@ -23,11 +19,10 @@
                     <input type="submit" style="border-radius: 20px;" class="btn btn-success">
                 </form>
             </div>
-        </center>
     </div>
 
     {% if raga %}
-        <center><div style="color: whitesmoke">  Raga is : {{ raga }} </div></center>
+        <center><div>  Raga is : {{ raga }} </div></center>
     {% endif %}
 
 

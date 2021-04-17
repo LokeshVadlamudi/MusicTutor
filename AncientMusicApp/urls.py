@@ -32,6 +32,7 @@ urlpatterns = [
 
     #interactive paths
     path('', interactiveViews.selectRaga, name='home'),
+    # path('index', interactiveViews.index, name='index'),
     path('selectRaga', interactiveViews.selectRaga),
 
     path('uploadSong', interactiveViews.uploadRaga, name='uploadSong'),

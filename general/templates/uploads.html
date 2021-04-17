@@ -6,16 +6,10 @@
 
 {% block body %}
 
-    <style>
-        .shad {
-            box-shadow: 5px 5px 20px;
-        }
-    </style>
-
-
-    <center>
     {% for i in songList %}
-        <div class="card shad" style="width: 50%">
+        <div class="row justify-content-center" style="padding-left: 25%;padding-right: 25%;" >
+<div class="card align-self-center" style="background-color: rgba(245, 245, 245, 0.2); border-radius: 25px"  >
+
 
             <label style="color: whitesmoke; font-size: larger">File : {{ i.fileName }}</label>
             <br>
@@ -28,8 +22,8 @@
             </audio>
 
         </div>
+        </div>
         <br>
     {% endfor %}
-    </center>
     
 {% endblock %}

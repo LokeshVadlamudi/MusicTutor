@@ -5,41 +5,46 @@ Upload Method
 {% endblock %}
 
 {% block body %}
-<style>
-    .shad {
-        box-shadow: 5px 5px 20px;
-    }
-</style>
 
+<div class="row justify-content-center" style="padding-left: 25%;padding-right: 25%;" >
+    <div class="card align-self-center" style="background-color: rgba(245, 245, 245, 0.2); border-radius: 25px"  >
 
-<div style="color: #5E5694; margin-top: 5%">
-    <center>
         <h3 style="color: white; ">Upload Song</h3>
 
-        <div class="card shad" style=" border-radius: 20px; padding: 1%">
-
-            
-
+        <div>
             <form action="{% url 'uploadSong' %}" method="post" enctype="multipart/form-data">
                 <br>
-                <label style="color: whitesmoke;" id="raga" name="raga" value={{ragaType}} >Selected Raga : {{ ragaType }}</label>
+                <label id="raga" name="raga" value={{ragaType}} >Selected Raga : {{ ragaType }}</label>
                 <br>
-                <input type="file" id="mySong" name="mySong" class="btn btn-info" style="border-radius: 20px; ">
 
-                <br>
-                <label style="color: wheat">OR</label>
+            <div class="row">
+                <div class="col">
+                    <label>
+                        <input type="file" name="mySong" id="mySong" style="display: none;" />
 
-                <br>
-                <label style="color: white;">Live Recording</label>
+                            <i class="bi bi-upload btn-outline-info" style="font-size: 10rem;"></i>
 
+                        <input type="button" style="display: none;"  value="Upload" onclick="document.getElementById('mySong').click();"/>
+                    </label>
+                    <br>
+                    <label>Upload</label>
+            </div>
                 <!-- record audio live -->
-
-                <div class="controls">
-                    <button type="button" id="mic">Get Microphone</button>
-                    <button type="button" id="record" hidden>Record</button>
+            <div class="col">
+                <div>
+                    <i class="bi bi-mic" style="font-size: 10rem;" id="mic"></i>
+{#                    <button type="button" id="mic">Get Microphone</button>#}
+                    <i class="bi bi-mic-fill" style="font-size: 10rem;" id="record" hidden></i>
+                     <br>
+                    <label id="recorderText">Get Microphone</label>
+{#                    <button type="button" id="record" hidden>Record</button>#}
+                    <br>
+                    <br>
+                    <div id="lastRecordedSong" hidden>Last recorded song!</div>
+                    <ul id="recordings" style="list-style-type: none"></ul>
                 </div>
-                <ul id="recordings"></ul>
-                </main>
+            </div>
+            </div>
                 <footer>
 
                 </footer>
@@ -48,6 +53,10 @@ Upload Method
                         const getMic = document.getElementById('mic');
                         const recordButton = document.getElementById('record');
                         const list = document.getElementById('recordings');
+                        const recorderText=document.getElementById("recorderText");
+                        const lastRecordedSong=document.getElementById("lastRecordedSong");
+
+
                         if ('MediaRecorder' in window) {
                             getMic.addEventListener('click', async () => {
                                 getMic.setAttribute('hidden', 'hidden');
@@ -72,13 +81,22 @@ Upload Method
                                         chunks = [];
                                     });
                                     recordButton.removeAttribute('hidden');
+                                    recorderText.innerText="Click here to start recording...";
                                     recordButton.addEventListener('click', () => {
+                                        console.log("fdgdg",recorder.state)
                                         if (recorder.state === 'inactive') {
                                             recorder.start();
-                                            recordButton.innerText = 'Stop';
+                                            recorderText.innerText = "Recording...Click here to finish";
+                                            recordButton.classList.remove("bi-mic-fill");
+                                            recordButton.classList.add("bi-stop-circle");
+
                                         } else {
                                             recorder.stop();
-                                            recordButton.innerText = 'Record';
+                                            lastRecordedSong.removeAttribute('hidden');
+                                             recorderText.innerText="Click here to retry recording again";
+                                            {#recordButton.innerText = 'Record';#}
+                                             recordButton.classList.remove("bi-stop-circle");
+                                            recordButton.classList.add("bi-mic-fill");
                                         }
                                     });
                                 } catch {
@@ -124,15 +142,16 @@ Upload Method
                                                 .toString()
                                                 .padStart(2, '0')}.webm`
                         );
-                        anchor.innerText = 'Download';
+                        {#anchor.innerText = 'Download';#}
                         audio.setAttribute('src', blobUrl);
                         audio.setAttribute('controls', 'controls');
                         li.appendChild(audio);
                         li.appendChild(anchor);
+                        list.innerHTML="";
                         list.appendChild(li);
 
                         //on rec.stop() 
-                        console.log(blob);
+                        {#console.log(blob);#}
                         var xhttp = new XMLHttpRequest();
                         xhttp.open("POST", "", true);
                         var data = new FormData();
@@ -140,7 +159,7 @@ Upload Method
                         xhttp.send(data);
                         xhttp.onreadystatechange = function () {
                             if (this.readyState == 4 && this.status == 200) {
-                                console.log(this.responseText);
+                                {#console.log(this.responseText);#}
                             }
                         };
 
@@ -152,10 +171,9 @@ Upload Method
                 <!-- end audio record -->
 
                 <input type="submit" style="border-radius: 20px;" class="btn btn-success" value="Send">
+
                 {% if error %}
-                <center>
                     <div style="color: whitesmoke"> Error: {{ error}} </div>
-                </center>
                 {% endif %}
 
                 <br>
@@ -163,6 +181,7 @@ Upload Method
         </div>
     </center>
 </div>
+        </div>
 
 
 
