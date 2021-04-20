@@ -77,13 +77,14 @@ def index(request):
 @csrf_exempt
 def uploadRaga(request):
     username = request.user.username
-
+    
     if request.method == 'POST':
-        # ragaType = request.POST.get('raga')
+        # ragaType = request.POST.get('senderSong')
         # print(ragaType)
         # audio_data = request.FILES.get('data')
         # path = default_storage.save('123' + '.mp3', ContentFile(audio_data.read()))
-
+        # audio_data = request.FILES['data']
+        # print(audio_data)
 
         context = {}
 
@@ -97,13 +98,11 @@ def uploadRaga(request):
         try:
             fileName = request.FILES['mySong'].name
         except:
-            context = {
-                'error' : 'Select the audio file'
-            }
-            fileName = 'undefined'
-            return render(request, 'uploadMethod.html', context)
+            fileName = 'recorded'
 
-        fileName = re.sub('\W+', '', fileName)
+
+        fileName = re.sub('\W+', '', fileName) + '.mp3'
+
 
 
         conn = tinys3.Connection(ACCESS_KEY, SECRET_KEY, tls=True)
@@ -177,7 +176,7 @@ def uploadRaga(request):
         mydb = myclient[db]
         mycol = mydb[col]
 
-        doc = { "username": username, "fileName": fileName, "songLink": songLink, "predictedRaga":raga, "confidenceScore":confidence }
+        doc = {"username": username, "fileName": fileName, "songLink": songLink, "predictedRaga":raga, "confidenceScore":confidence }
 
         try:
             mycol.insert_one(doc)
@@ -185,7 +184,7 @@ def uploadRaga(request):
             print('failed to add details into db')
        
         
-        return render(request,'result.html', context)
+        return render(request, 'result.html' , context)
 
     context = {
 
