@@ -13,6 +13,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 import re
 
+import math
+
 # s3 upload
 import boto3
 from botocore.exceptions import NoCredentialsError
@@ -86,6 +88,11 @@ def uploadRaga(request):
         # audio_data = request.FILES['data']
         # print(audio_data)
 
+        # print('bossssss',request.POST.get('selectedRaga'))
+
+
+
+
         context = {}
 
         songname = 'mysong.mp3'
@@ -111,57 +118,105 @@ def uploadRaga(request):
         # sending s3 link to prediction microservice.
         songLink = 'https://musictutor-storage.s3.amazonaws.com/' + username + '/' + fileName
 
-        
+
 
         def predict_raga(fp):
-            y, sr = librosa.load(fp, res_type='kaiser_best')
-            mfcc = librosa.feature.mfcc(y=y, sr=22050, hop_length=512, n_mfcc=13)
-            mfcc = mfcc.T
+            # class_names = ['Khamaj', 'Lalit', 'Malkauns']
+            class_names = ['Des Raga',
+                           'Bhairavi Raga',
+                           'Bilaskhani todi Raga',
+                           'Bageshree Raga',
+                           'Ahira Bhairav Raga']
+
+
+            # y, sr = librosa.load(fp, res_type='kaiser_best')
+
+            # mfcc = librosa.feature.mfcc(y=y, sr=22050, hop_length=512, n_mfcc=13)
+            # mfcc = mfcc.T
+
+            SAMPLE_RATE = 22050
+            TRACK_DURATION = 30  # measured in seconds
+            SAMPLES_PER_TRACK = SAMPLE_RATE * TRACK_DURATION
+            num_segments=10
+            hop_length = 512
+            num_mfcc = 13
+            sample_rate = 22050
+            n_fft = 2048
+
+            samples_per_segment = int(SAMPLES_PER_TRACK / num_segments)
+            num_mfcc_vectors_per_segment = math.ceil(samples_per_segment / hop_length)
+            signal, sample_rate = librosa.load(fp, res_type='kaiser_best',sr=SAMPLE_RATE)
 
             data = {
                 "mfcc": []
             }
+            predictions_list = []
 
-            data["mfcc"].append(mfcc.tolist())
+            for d in range(num_segments):
+                # calculate start and finish sample for current segment
+                start = samples_per_segment * d
+                finish = start + samples_per_segment
 
-            X = np.array(data["mfcc"])
 
-            data = json.dumps({"signature_name": "serving_default", "instances": X.tolist()})
-            print('Data: {} ... {}'.format(data[:50], data[len(data) - 52:]))
+                # extract mfcc
+                mfcc = librosa.feature.mfcc(signal[start:finish], sample_rate, n_mfcc=num_mfcc, n_fft=n_fft,
+                                            hop_length=hop_length)
+                mfcc = mfcc.T
 
-            headers = {"content-type": "application/json"}
-            json_response = requests.post('http://35.188.146.134:8501/v1/models/classify_raga:predict', data=data,
-                                          headers=headers)
+                data["mfcc"].append(mfcc.tolist())
 
-            predictions = json.loads(json_response.text)['predictions']
-            class_names = ['De╠äs╠ü',
-                           'Bhairavi',
-                           'Bila╠äsakha╠äni╠ä to╠äd╠úi╠ä',
-                           'Ba╠äge╠äs╠üri╠ä',
-                           'Ahira bhairav']
 
-            print(predictions)
-            return (class_names[np.argmax(predictions)])
+
+
+
+
+            for i in data['mfcc']:
+                X = np.array(i)
+                X = X.reshape(1,X.shape[0],X.shape[1])
+                # X=[X]
+                # print(X.shape)
+
+
+                data_x = json.dumps({"signature_name": "serving_default", "instances": X.tolist()})
+                # print('Data: {} ... {}'.format(data[:50], data[len(data) - 52:]))
+
+                headers = {"content-type": "application/json"}
+                json_response = requests.post('http://34.122.53.110:8501/v1/models/classify_raga:predict', data=data_x,
+                                              headers=headers)
+
+
+                predictions = json.loads(json_response.text)['predictions']
+
+
+
+                predictions_list.append(np.argmax(predictions))
+
+
+            final=max(predictions_list, key=predictions_list.count)
+            final_prec= str((predictions_list.count(final)/len(predictions_list))*100)+'%'
+            print(final,final_prec)
+
+
+            return (class_names[final],final_prec)
+
 
         
 
-        # predict the raga and confidence score using the tensorflow serving model 
+        # predict the raga and confidence score using the tensorflow serving model
 
-        # raga = predict_raga('mysong.mp3')
-
-        raga = 'Bhairavi'
+        raga,confidence = predict_raga('mysong.mp3')
         
         context["raga"] = raga
-        
-        confidence = "90%"
 
         context["confidence"] = confidence
 
+        context["selectedRaga"]=request.POST.get('selectedRaga')
 
 
-        #send the data to mongo db
 
-        #username, song name, song link, predicted raga, predicted confidence score
+        # send the data to mongo db
+
+        # username, song name, song link, predicted raga, predicted confidence score
 
 
 
@@ -170,7 +225,7 @@ def uploadRaga(request):
         col = settings['songCol']
 
 
-        
+
 
         myclient = pymongo.MongoClient(mongodbUrl)
         mydb = myclient[db]
@@ -182,8 +237,8 @@ def uploadRaga(request):
             mycol.insert_one(doc)
         except:
             print('failed to add details into db')
-       
-        
+
+
         return render(request, 'result.html' , context)
 
     context = {
@@ -193,17 +248,22 @@ def uploadRaga(request):
 
 
 
+
 #get recommendations
 
 @login_required(login_url='login')
 @csrf_exempt
 def getRecommendations(request):
     username = request.user.username
+    context = {}
 
     if request.method == 'POST':
-        ragaType = request.POST.get('raga','Bhairavi')
-        print(ragaType)
+        ragaType = request.POST.get('raga','Bhairavi Raga')
+        selectedRagaType = request.POST.get('selected'
+                                            'Raga', 'Bhairavi Raga')
+        confidence = request.POST.get('confidence', '0%')
 
+        print(ragaType,selectedRagaType)
 
         mongodbUrl = settings['mongoUrl']
         db = settings['database']
@@ -217,24 +277,36 @@ def getRecommendations(request):
 
         query = {"ragaType":ragaType}
 
-        print(mydb, mycol)
-        recommendations  = []
+        ragaRecommendations  = []
         try:
             result = mycol.find(query)
             print("result", result)
             
         except:
             result = ['']
-        
 
         for i in result:
-            print(i)
-            recommendations = i['songs']
+            ragaRecommendations = i['songs']
+        context['ragaRecommendations'] = ragaRecommendations
+
+        selectedRagaTypeQuery = {"ragaType": selectedRagaType}
+
+        selectedRagaRecommendations = []
+        try:
+            selectedRagaResult = mycol.find(selectedRagaTypeQuery)
+        except:
+            selectedRagaResult = ['']
         
-        context = {
-            'recommendations' : recommendations
-        }
-        
+
+        for i in selectedRagaResult:
+            selectedRagaRecommendations = i['songs']
+        context['selectedRagaRecommendations'] = selectedRagaRecommendations
+        context['raga'] = ragaType
+        context['selectedRaga'] = selectedRagaType
+        context['confidence'] = confidence
+
+
+        print(context)
         return render(request,'result.html', context)
 
 
