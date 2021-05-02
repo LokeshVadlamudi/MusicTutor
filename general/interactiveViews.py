@@ -1,14 +1,11 @@
-from django.shortcuts import render
+
 # encoding: utf-8
 import json
-from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import CreateView, DeleteView, ListView, DetailView
+# from django.http import HttpResponse, HttpResponseRedirect
+# from django.views.generic import CreateView, DeleteView, ListView, DetailView
 from django.views.decorators.csrf import csrf_exempt
 import requests
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from .forms import CreateUserForm
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 import re
@@ -16,29 +13,15 @@ import re
 import math
 
 # s3 upload
-import boto3
-from botocore.exceptions import NoCredentialsError
 import tinys3
-import keras, cv2
-import os
 
-# pylab
-import wave
-import pylab
 
 # conversion wav to png
 
 import librosa
-import pandas as pd
 import numpy as np
-import matplotlib
 
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import os
-from PIL import Image
-import pathlib
-import csv
 
 #import mongo
 import pymongo
@@ -143,7 +126,6 @@ def uploadRaga(request):
             n_fft = 2048
 
             samples_per_segment = int(SAMPLES_PER_TRACK / num_segments)
-            num_mfcc_vectors_per_segment = math.ceil(samples_per_segment / hop_length)
             signal, sample_rate = librosa.load(fp, res_type='kaiser_best',sr=SAMPLE_RATE)
 
             data = {

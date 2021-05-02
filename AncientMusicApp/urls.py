@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from general import views, songViews, interactiveViews
+from general import views, interactiveViews
 
 from django.conf.urls import url
 
