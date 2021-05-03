@@ -41,10 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'general',
-    's3upload',
-    'storages',
+    # 's3upload',
+    # 'storages',
     'bootstrap4',
-    'django_matplotlib',
+    # 'django_matplotlib',
     'channels',
     'chat'
 ]

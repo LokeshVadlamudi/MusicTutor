@@ -27,4 +27,6 @@ RUN apt-get install ffmpeg libsm6 libxext6  -y
 # port where the Django app runs
 EXPOSE 8000
 # start server
-CMD python manage.py runserver
+#CMD python manage.py runserver
+CMD ["gunicorn", "--bind", ":8000", "--timeout" ,"200" ,"--workers", "3", "AncientMusicApp.wsgi:application"]
+
