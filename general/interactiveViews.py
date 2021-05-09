@@ -73,8 +73,6 @@ def uploadRaga(request):
 
         # print('bossssss',request.POST.get('selectedRaga'))
 
-
-
         context = {}
 
         songname = 'mysong.mp3'
