@@ -60,11 +60,25 @@
                                        onclick="document.getElementById('mySong').click();"/>
                             </label>
                             <br>
-                            <button type="submit" style="border-radius: 20px; " class="btn btn-success">Upload</button>
+                            <button type="submit" style="border-radius: 20px; " class="btn btn-success" disabled >
+                                Upload
+                            </button>
 
                         </div>
-
-
+                        <script>
+                            $(document).ready(
+                                function () {
+                                    $('input:file').change(
+                                        function () {
+                                            if ($(this).val()) {
+                                                $('button:submit').attr('disabled', false);
+                                                // or, as has been pointed out elsewhere:
+                                                // $('input:submit').removeAttr('disabled');
+                                            }
+                                        }
+                                    );
+                                });
+                        </script>
                         {% if error %}
                             <div style="color: whitesmoke"> Error: {{ error }} </div>
                         {% endif %}
