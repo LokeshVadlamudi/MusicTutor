@@ -60,7 +60,7 @@
                                        onclick="document.getElementById('mySong').click();"/>
                             </label>
                             <br>
-                            <button type="submit" style="border-radius: 20px; " class="btn btn-success" disabled >
+                            <button type="submit" style="border-radius: 20px; " class="btn btn-success" disabled>
                                 Upload
                             </button>
 
@@ -70,6 +70,22 @@
                                 function () {
                                     $('input:file').change(
                                         function () {
+
+                                            var fileInput = document.getElementById('mySong');
+
+                                            var filePath = fileInput.value;
+
+                                            // Allowing file type
+                                            var allowedExtensions =
+                                                /(\.mp3)$/i;
+
+                                            if (!allowedExtensions.exec(filePath)) {
+                                                alert('Invalid file type');
+                                                fileInput.value = '';
+                                                return false;
+                                            }
+
+
                                             if ($(this).val()) {
                                                 $('button:submit').attr('disabled', false);
                                                 // or, as has been pointed out elsewhere:
@@ -78,6 +94,8 @@
                                         }
                                     );
                                 });
+
+
                         </script>
                         {% if error %}
                             <div style="color: whitesmoke"> Error: {{ error }} </div>
