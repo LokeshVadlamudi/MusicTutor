@@ -156,7 +156,7 @@
                                         });
                                         const mimeType = 'audio/webm';
                                         let chunks = [];
-                                        const recorder = new MediaRecorder(stream, {type: 'audio/wav'});
+                                        const recorder = new MediaRecorder(stream, {type: 'audio/x-mpeg-3'});
                                         recorder.addEventListener('dataavailable', event => {
                                             if (typeof event.data === 'undefined') return;
                                             if (event.data.size === 0) return;
@@ -252,13 +252,15 @@
                             {#xhttp.open("POST", "", true);#}
                             var form = new FormData();
                             form.append('data', blob, 'audio_blob');
+                            console.log(form.get('data'))
+
 
                             {##send req#}
 
                             $.ajax({
-                                url: '{% url 'uploadSong' %}',
+                                url: '{% url 'recordSong' %}',
                                 type: 'POST',
-                                data: blob,
+                                data: form,
                                 processData: false,
                                 contentType: false,
                                 success: function (data) {
