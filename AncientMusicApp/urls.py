@@ -37,6 +37,8 @@ urlpatterns = [
 
     path('uploadSong', interactiveViews.uploadRaga, name='uploadSong'),
     path('recordSong', interactiveViews.recordSong, name='recordSong'),
+    path('processRecord', interactiveViews.processRecord, name='processRecord'),
+
 
     path('getRecommendations', interactiveViews.getRecommendations, name='getRecommendations'),
 

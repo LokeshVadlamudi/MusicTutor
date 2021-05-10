@@ -115,12 +115,13 @@
 
 
             <div id="recordDiv" class="desc">
-                <form action="{% url 'uploadSong' %}" method="post" enctype="multipart/form-data">
+                <form action="{% url 'processRecord' %}" method="post" enctype="multipart/form-data">
                     <!-- record audio live -->
                     <div class="col">
                         <div>
                             <br>
                             <label id="raga" name="raga" value={{ ragaType }}>Selected Raga : {{ ragaType }}</label>
+                            <input type="text" name="selectedRaga" value="{{ ragaType }}" hidden/>
                             <br>
                             <i class="bi bi-mic" style="font-size: 10rem;" id="mic"></i>
                             {#                    <button type="button" id="mic">Get Microphone</button>#}

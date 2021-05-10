@@ -216,8 +216,7 @@ def getRecommendations(request):
 
     if request.method == 'POST':
         ragaType = request.POST.get('raga','Bhairavi Raga')
-        selectedRagaType = request.POST.get('selected'
-                                            'Raga', 'Bhairavi Raga')
+        selectedRagaType = request.POST.get('selectedRaga', 'Bhairavi Raga')
         confidence = request.POST.get('confidence', '0%')
 
         print(ragaType,selectedRagaType)
@@ -280,6 +279,16 @@ def recordSong(request):
             f.write(file_x.read())
         f.close()
 
+    return ''
+
+@login_required(login_url='login')
+@csrf_exempt
+def processRecord(request):
+    username = request.user.username
+
+    if request.method == 'POST':
+        songname = 'mysong.wav'
+
         f = open(songname, mode='rb')
 
 
@@ -315,15 +324,17 @@ def recordSong(request):
             sample_rate = 22050
             n_fft = 2048
 
-            song_duration=librosa.get_duration(y=signal, sr=sample_rate)
 
-            if song_duration<35:
-                return redirect('selectRaga')
 
 
 
             samples_per_segment = int(SAMPLES_PER_TRACK / num_segments)
             signal, sample_rate = librosa.load(fp, res_type='kaiser_best',sr=SAMPLE_RATE)
+
+            song_duration = librosa.get_duration(y=signal, sr=sample_rate)
+
+            if song_duration < 35:
+                return None, 0
 
             data = {
                 "mfcc": []
@@ -380,6 +391,10 @@ def recordSong(request):
         # predict the raga and confidence score using the tensorflow serving model
 
         raga, confidence = predict_raga(songname)
+
+        if raga is None:
+            return render(request,'selectRaga.html',{})
+        context = {}
 
         context["raga"] = raga
 
