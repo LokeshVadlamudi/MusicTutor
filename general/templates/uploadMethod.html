@@ -244,7 +244,7 @@
 
                             let senderId = document.getElementById('senderSong');
                             console.log(list);
-                            senderId.value = blobUrl;
+                            {#senderId.value = blobUrl;#}
 
                             //on rec.stop()
                             {#console.log(blob);#}
@@ -258,7 +258,7 @@
                             $.ajax({
                                 url: '{% url 'uploadSong' %}',
                                 type: 'POST',
-                                data: form,
+                                data: blob,
                                 processData: false,
                                 contentType: false,
                                 success: function (data) {

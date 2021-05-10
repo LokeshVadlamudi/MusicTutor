@@ -76,6 +76,8 @@ def uploadRaga(request):
         context = {}
 
         songname = 'mysong.mp3'
+        print("header", request.headers)
+        print(request)
 
         with open(songname, mode='wb') as f:
             f.write(request.body)
