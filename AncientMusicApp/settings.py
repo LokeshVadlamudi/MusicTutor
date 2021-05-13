@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import urllib
+import epsagon
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,6 +51,13 @@ INSTALLED_APPS = [
     'channels',
     'chat'
 ]
+
+# epsagon
+epsagon.init(
+  token='a5db039f-d1c6-4f60-a9b8-cf255e0802e4',
+  app_name='musicTutor',
+  metadata_only=False,  # Optional, send more trace data
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
