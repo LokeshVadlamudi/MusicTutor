@@ -53,17 +53,12 @@ INSTALLED_APPS = [
 ]
 
 # epsagon
-# epsagon.init(
-#   token='a5db039f-d1c6-4f60-a9b8-cf255e0802e4',
-#   app_name='musicTutor',
-#   metadata_only=False,  # Optional, send more trace data
-# )
-
 epsagon.init(
-  token='d95763b8-402a-46d9-bd8e-8b76a078e2c1',
-  app_name='flightSimulator',
+  token='a5db039f-d1c6-4f60-a9b8-cf255e0802e4',
+  app_name='musicTutor',
   metadata_only=False,  # Optional, send more trace data
 )
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
