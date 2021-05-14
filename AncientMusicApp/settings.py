@@ -53,11 +53,11 @@ INSTALLED_APPS = [
 ]
 
 # epsagon
-epsagon.init(
-  token='a5db039f-d1c6-4f60-a9b8-cf255e0802e4',
-  app_name='musicTutor',
-  metadata_only=False,  # Optional, send more trace data
-)
+# epsagon.init(
+#   token='a5db039f-d1c6-4f60-a9b8-cf255e0802e4',
+#   app_name='musicTutor',
+#   metadata_only=False,  # Optional, send more trace data
+# )
 
 
 MIDDLEWARE = [
