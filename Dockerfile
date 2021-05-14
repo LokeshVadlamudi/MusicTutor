@@ -31,6 +31,7 @@ EXPOSE 8000
 # start server
 
 #CMD python manage.py runserver 8000
+CMD ["python3"]
 
 CMD ["daphne", "AncientMusicApp.asgi:application", "-b" ,"0.0.0.0", "-p","8000"]
 
