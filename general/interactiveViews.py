@@ -393,7 +393,10 @@ def processRecord(request):
         raga, confidence = predict_raga(songname)
 
         if raga is None:
-            return render(request,'selectRaga.html',{})
+            context = {
+                "message": "Please record the song for more than 35 seconds!"
+            }
+            return redirect('/')
         context = {}
 
         context["raga"] = raga
